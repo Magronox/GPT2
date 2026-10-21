@@ -68,7 +68,8 @@ class Transformer(nn.Module):
                  rate: int = 4,
                  dropout: float = 0.1,
                  bidirectional: bool = True,
-                 positional_embedding: bool = True):
+                 positional_embedding: bool = True,
+                 kaiming_init: bool = False):
         super().__init__()
         self.bidirectional = bidirectional
         self.pad_masking = PadMasking(pad_idx)
@@ -76,7 +77,8 @@ class Transformer(nn.Module):
 
         self.positional_embedding = (PositionalEmbedding(seq_len, dims)
                                      if positional_embedding else None)
-        self.token_embedding = TokenEmbedding(words, dims)
+        self.token_embedding = TokenEmbedding(words, dims,
+                                              kaiming_init=kaiming_init)
         self.dropout_embedding = nn.Dropout(dropout)
 
         self.transformers = nn.ModuleList([

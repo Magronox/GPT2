@@ -51,6 +51,15 @@ class TokenEmbedding(nn.Embedding):
                                     or (..., seq_len, num_embeddings)
     ===========================================================================
     """
+    def __init__(self, num_embeddings: int, embedding_dim: int, *,
+                 kaiming_init: bool = False, **kwargs):
+        super().__init__(num_embeddings, embedding_dim, **kwargs)
+        if kaiming_init:
+            nn.init.kaiming_normal_(self.weight)
+            if self.padding_idx is not None:
+                with torch.no_grad():
+                    self.weight[self.padding_idx].fill_(0)
+
     def reset_parameters(self):
         nn.init.normal_(self.weight, std=0.02)
 
