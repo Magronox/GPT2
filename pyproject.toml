@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpt2"
+version = "0.1.0"
+requires-python = ">=3.8"
+dependencies = ["torch", "numpy", "regex", "tqdm", "matplotlib"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
