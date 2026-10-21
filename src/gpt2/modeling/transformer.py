@@ -67,13 +67,15 @@ class Transformer(nn.Module):
                  dims: int,
                  rate: int = 4,
                  dropout: float = 0.1,
-                 bidirectional: bool = True):
+                 bidirectional: bool = True,
+                 positional_embedding: bool = True):
         super().__init__()
         self.bidirectional = bidirectional
         self.pad_masking = PadMasking(pad_idx)
         self.future_masking = FutureMasking()
 
-        self.positional_embedding = PositionalEmbedding(seq_len, dims)
+        self.positional_embedding = (PositionalEmbedding(seq_len, dims)
+                                     if positional_embedding else None)
         self.token_embedding = TokenEmbedding(words, dims)
         self.dropout_embedding = nn.Dropout(dropout)
 
@@ -95,8 +97,10 @@ class Transformer(nn.Module):
             mask = mask + self.future_masking(x, offset)
 
         # Use token embedding and positional embedding layers.
-        x = self.token_embedding(x) + self.positional_embedding(x, offset)
-        x = self.dropout_embedding(x)
+        h = self.token_embedding(x)
+        if self.positional_embedding is not None:
+            h = h + self.positional_embedding(x, offset)
+        x = self.dropout_embedding(h)
 
         # Apply transformer layers sequentially.
         present = []
